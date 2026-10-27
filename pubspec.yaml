@@ -1,0 +1,28 @@
+name: interactive_radar_chart
+description: Interactive radar spider chart for Flutter with draggable vertices, magnetic snapping, multi-layer overlays, and smooth morph transitions.
+version: 1.0.0
+homepage: https://github.com/govindtank/interactive_radar_chart
+repository: https://github.com/govindtank/interactive_radar_chart
+issue_tracker: https://github.com/govindtank/interactive_radar_chart/issues
+
+topics:
+  - chart
+  - radar
+  - spider-chart
+  - data-visualization
+  - ui
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+  flutter: ">=3.16.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:

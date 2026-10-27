@@ -1,0 +1,7 @@
+.github/
+.dart_tool/
+.packages
+build/
+.DS_Store
+example/build/
+example/.dart_tool/
