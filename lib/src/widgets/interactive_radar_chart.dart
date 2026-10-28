@@ -166,6 +166,34 @@ class _RadarChartPainter extends CustomPainter {
     return ((val - minValue) / (maxValue - minValue)).clamp(0.0, 1.0);
   }
 
+  Path _createCurvedPath(List<Offset> points) {
+    final path = Path();
+    final count = points.length;
+    if (count < 3) {
+      if (points.isNotEmpty) path.moveTo(points.first.dx, points.first.dy);
+      for (int i = 1; i < count; i++) {
+        path.lineTo(points[i].dx, points[i].dy);
+      }
+      path.close();
+      return path;
+    }
+
+    path.moveTo(points.first.dx, points.first.dy);
+    for (int i = 0; i < count; i++) {
+      final p0 = points[(i - 1 + count) % count];
+      final p1 = points[i];
+      final p2 = points[(i + 1) % count];
+      final p3 = points[(i + 2) % count];
+
+      final cp1 = p1 + (p2 - p0) / 6.0;
+      final cp2 = p2 - (p3 - p1) / 6.0;
+
+      path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, p2.dx, p2.dy);
+    }
+    path.close();
+    return path;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     if (dataSets.isEmpty || dataSets.first.entries.isEmpty) return;
@@ -242,7 +270,6 @@ class _RadarChartPainter extends CustomPainter {
 
     // 3. Draw Data Sets (Polygons & Handles)
     for (final set in dataSets) {
-      final path = Path();
       final vertices = <Offset>[];
 
       for (int i = 0; i < entriesCount; i++) {
@@ -250,14 +277,22 @@ class _RadarChartPainter extends CustomPainter {
         final norm = _normalize(set.entries[i].value);
         final pt = center + Offset(cos(angle), sin(angle)) * (radius * norm);
         vertices.add(pt);
-
-        if (i == 0) {
-          path.moveTo(pt.dx, pt.dy);
-        } else {
-          path.lineTo(pt.dx, pt.dy);
-        }
       }
-      path.close();
+
+      final path = set.useCurvedPolygon
+          ? _createCurvedPath(vertices)
+          : (() {
+              final p = Path();
+              for (int i = 0; i < vertices.length; i++) {
+                if (i == 0) {
+                  p.moveTo(vertices[i].dx, vertices[i].dy);
+                } else {
+                  p.lineTo(vertices[i].dx, vertices[i].dy);
+                }
+              }
+              p.close();
+              return p;
+            })();
 
       // Fill polygon
       final fillPaint = Paint()
@@ -296,6 +331,44 @@ class _RadarChartPainter extends CustomPainter {
               ..style = PaintingStyle.stroke
               ..strokeWidth = 3.0;
             canvas.drawCircle(pt, set.entryRadius + 8.0, ringPaint);
+
+            // Floating Tooltip HUD Bubble
+            if (theme.showDragTooltip) {
+              final entry = set.entries[i];
+              final tooltipText = '${entry.label}: ${entry.value.round()}';
+              final tp = TextPainter(
+                text: TextSpan(
+                  text: tooltipText,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                textDirection: TextDirection.ltr,
+              )..layout();
+
+              final pillRect = Rect.fromCenter(
+                center: Offset(pt.dx, pt.dy - 26.0),
+                width: tp.width + 16.0,
+                height: tp.height + 10.0,
+              );
+
+              final pillPaint = Paint()..color = const Color(0xFF18181B);
+              canvas.drawRRect(
+                  RRect.fromRectAndRadius(pillRect, const Radius.circular(6.0)),
+                  pillPaint);
+
+              final borderPaint = Paint()
+                ..color = theme.activeHandleColor
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1.0;
+              canvas.drawRRect(
+                  RRect.fromRectAndRadius(pillRect, const Radius.circular(6.0)),
+                  borderPaint);
+
+              tp.paint(canvas, Offset(pillRect.left + 8.0, pillRect.top + 5.0));
+            }
           }
         }
       }

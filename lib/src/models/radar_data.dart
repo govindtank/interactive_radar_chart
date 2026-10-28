@@ -52,6 +52,7 @@ class RadarDataSet {
     this.borderWidth = 2.0,
     this.entryRadius = 5.0,
     this.isInteractive = true,
+    this.useCurvedPolygon = false,
   });
 
   final List<RadarEntry> entries;
@@ -60,6 +61,7 @@ class RadarDataSet {
   final double borderWidth;
   final double entryRadius;
   final bool isInteractive;
+  final bool useCurvedPolygon;
 
   RadarDataSet copyWith({
     List<RadarEntry>? entries,
@@ -68,6 +70,7 @@ class RadarDataSet {
     double? borderWidth,
     double? entryRadius,
     bool? isInteractive,
+    bool? useCurvedPolygon,
   }) {
     return RadarDataSet(
       entries: entries ?? this.entries,
@@ -76,6 +79,7 @@ class RadarDataSet {
       borderWidth: borderWidth ?? this.borderWidth,
       entryRadius: entryRadius ?? this.entryRadius,
       isInteractive: isInteractive ?? this.isInteractive,
+      useCurvedPolygon: useCurvedPolygon ?? this.useCurvedPolygon,
     );
   }
 }
@@ -93,6 +97,7 @@ class InteractiveRadarTheme {
     this.gridShape = RadarGridShape.polygon,
     this.fontFamily,
     this.labelFontSize = 12.0,
+    this.showDragTooltip = true,
   });
 
   final Color gridColor;
@@ -104,6 +109,7 @@ class InteractiveRadarTheme {
   final RadarGridShape gridShape;
   final String? fontFamily;
   final double labelFontSize;
+  final bool showDragTooltip;
 
   /// Sleek dark theme.
   factory InteractiveRadarTheme.dark() {

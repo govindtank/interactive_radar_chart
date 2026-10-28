@@ -1,3 +1,9 @@
+## 1.1.0
+
+- **Floating Tooltip HUD Bubble on Drag**: Real-time attribute tag and value pill (`[Attack: 85]`) that floats smoothly above the active dragged vertex handle.
+- **Organic Curved Spline Polygons (`useCurvedPolygon: true`)**: Added closed Catmull-Rom cubic Bézier curve paths for smooth organic stat blobs.
+- **Theme Enhancements**: Added `showDragTooltip` toggle to `InteractiveRadarTheme`.
+
 ## 1.0.0
 
 - Initial release of `interactive_radar_chart`.
